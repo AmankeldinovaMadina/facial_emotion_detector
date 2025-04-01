@@ -23,7 +23,6 @@ class FacePainter extends CustomPainter {
       final rightEye = face.rightEyeOpenProbability ?? -1;
 
       String emotion = "Neutral";
-
       if (smile > 0.8 && leftEye > 0.8 && rightEye > 0.8) {
         emotion = "Surprised 😮";
       } else if (leftEye < 0.2 && rightEye < 0.2) {
@@ -42,10 +41,13 @@ class FacePainter extends CustomPainter {
       );
       textPainter.text = textSpan;
       textPainter.layout();
-      textPainter.paint(canvas, Offset(face.boundingBox.left, face.boundingBox.top - 20));
+      textPainter.paint(
+        canvas,
+        Offset(face.boundingBox.left, face.boundingBox.top - 20),
+      );
     }
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
