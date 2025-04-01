@@ -1,16 +1,29 @@
-# emotion_detector_app
+# Face & Emotion Detector
 
-A new Flutter project.
+A real-time Flutter application that utilizes the device camera and Google ML Kit to detect faces and recognize emotions such as happy, sleepy, surprised, and serious, slight smile.
+
+## Features
+
+- 📸 Real-time face detection using the device's camera.
+- 😃 Emotion recognition based on facial expressions.
+- 🌞 Automatic brightness detection and exposure adjustment for optimal performance.
+- 🔄 Switching between front and rear cameras.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Installation
 
-A few resources to get you started if this is your first Flutter project:
+1. **Clone the Repository**:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+   ```bash
+   git clone https://github.com/your-username/face-emotion-detector.git
+   flutter pub get
+   flutter run
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Screenshots 
+![Detection Screen](/assets/image1.PNG)
+![Detection Screen](/assets/image2.PNG)
+
+### Video demo
+[Link Text](https://drive.google.com/file/d/1GUrGo9bvR5hsFD0DM1Z5vAy6K0UR9Qoh/view?usp=sharing)
+
