@@ -18,6 +18,7 @@ class _FaceDetectionScreenState extends State<FaceDetectionScreen> {
   int _cameraIndex = 0;
   List<Face> _faces = [];
   bool _isDetecting = false;
+  String _lightingWarning = '';
 
   final FaceDetector faceDetector = GoogleMlKit.vision.faceDetector(
     FaceDetectorOptions(enableContours: true, enableClassification: true),
@@ -42,16 +43,42 @@ class _FaceDetectionScreenState extends State<FaceDetectionScreen> {
     _initializeCamera(widget.cameras[_cameraIndex]);
   }
 
+  double _estimateBrightness(CameraImage image) {
+    final plane = image.planes.first;
+    final bytes = plane.bytes;
+    final total = bytes.fold<int>(0, (sum, byte) => sum + byte);
+    return total / bytes.length;
+  }
+
   void _processCameraImage(CameraImage image) async {
     if (_isDetecting) return;
     _isDetecting = true;
 
     try {
+      final brightness = _estimateBrightness(image);
+
+      if (brightness < 80) {
+        setState(() {
+          _lightingWarning = 'Too Dark 🔦';
+          _faces = [];
+        });
+        return;
+      } else if (brightness > 200) {
+        setState(() {
+          _lightingWarning = 'Too Bright ☀️';
+          _faces = [];
+        });
+        return;
+      } else {
+        setState(() => _lightingWarning = '');
+      }
+
       final WriteBuffer allBytes = WriteBuffer();
       for (Plane plane in image.planes) {
         allBytes.putUint8List(plane.bytes);
       }
       final bytes = allBytes.done().buffer.asUint8List();
+
       final Size imageSize = Size(image.width.toDouble(), image.height.toDouble());
 
       final InputImageRotation imageRotation =
@@ -98,8 +125,6 @@ class _FaceDetectionScreenState extends State<FaceDetectionScreen> {
           ? Stack(
               children: [
                 CameraPreview(_controller),
-
-                // Face painter
                 CustomPaint(painter: FacePainter(faces: _faces)),
 
                 // Face count overlay
@@ -118,6 +143,24 @@ class _FaceDetectionScreenState extends State<FaceDetectionScreen> {
                     ),
                   ),
                 ),
+
+                // Brightness warning overlay
+                if (_lightingWarning.isNotEmpty)
+                  Positioned(
+                    top: 90,
+                    left: 20,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        _lightingWarning,
+                        style: const TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ),
 
                 // Switch camera button
                 Positioned(
