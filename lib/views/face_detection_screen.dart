@@ -1,12 +1,12 @@
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/services.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
+import '../widgets/face_painter.dart';
 
 class FaceDetectionScreen extends StatefulWidget {
   final List<CameraDescription> cameras;
-
   const FaceDetectionScreen({super.key, required this.cameras});
 
   @override
@@ -127,42 +127,22 @@ class _FaceDetectionScreenState extends State<FaceDetectionScreen> {
                 CameraPreview(_controller),
                 CustomPaint(painter: FacePainter(faces: _faces)),
 
-                // Face count overlay
+                // Face count
                 Positioned(
                   top: 40,
                   left: 20,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      'Faces Detected: ${_faces.length}',
-                      style: const TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                  ),
+                  child: _label('Faces Detected: ${_faces.length}', color: Colors.black),
                 ),
 
-                // Brightness warning overlay
+                // Lighting warning
                 if (_lightingWarning.isNotEmpty)
                   Positioned(
                     top: 90,
                     left: 20,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.6),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        _lightingWarning,
-                        style: const TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                    ),
+                    child: _label(_lightingWarning, color: Colors.red),
                   ),
 
-                // Switch camera button
+                // Camera switch
                 Positioned(
                   bottom: 30,
                   right: 20,
@@ -177,56 +157,15 @@ class _FaceDetectionScreenState extends State<FaceDetectionScreen> {
           : const Center(child: CircularProgressIndicator()),
     );
   }
-}
 
-class FacePainter extends CustomPainter {
-  final List<Face> faces;
-
-  FacePainter({required this.faces});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.green
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke;
-
-    final textPainter = TextPainter(textDirection: TextDirection.ltr);
-
-    for (var face in faces) {
-      canvas.drawRect(face.boundingBox, paint);
-
-      final smile = face.smilingProbability ?? -1;
-      final leftEye = face.leftEyeOpenProbability ?? -1;
-      final rightEye = face.rightEyeOpenProbability ?? -1;
-
-      String emotion = "Neutral";
-
-      if (smile > 0.8 && leftEye > 0.8 && rightEye > 0.8) {
-        emotion = "Surprised 😮";
-      } else if (leftEye < 0.2 && rightEye < 0.2) {
-        emotion = "Sleepy 😴";
-      } else if (smile > 0.8) {
-        emotion = "Happy 😊";
-      } else if (smile > 0.5) {
-        emotion = "Slight Smile 🙂";
-      } else {
-        emotion = "Serious 😐";
-      }
-
-      final textSpan = TextSpan(
-        text: emotion,
-        style: const TextStyle(color: Colors.yellow, fontSize: 16),
-      );
-      textPainter.text = textSpan;
-      textPainter.layout();
-      textPainter.paint(
-        canvas,
-        Offset(face.boundingBox.left, face.boundingBox.top - 20),
-      );
-    }
+  Widget _label(String text, {Color color = Colors.black}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.6),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 16)),
+    );
   }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
