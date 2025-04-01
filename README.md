@@ -20,9 +20,13 @@ A real-time Flutter application that utilizes the device camera and Google ML Ki
    flutter pub get
    flutter run
 
-### Screenshots 
-![Detection Screen](/assets/image1.PNG)
-![Detection Screen](/assets/image2.PNG)
+### 📸 Screenshots
+
+<p float="left">
+  <img src="/assets/image1.PNG" width="45%" />
+  <img src="/assets/image2.PNG" width="45%" />
+</p>
+
 
 ### Video demo
 [Link Text](https://drive.google.com/file/d/1GUrGo9bvR5hsFD0DM1Z5vAy6K0UR9Qoh/view?usp=sharing)
